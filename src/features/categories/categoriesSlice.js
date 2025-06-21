@@ -48,10 +48,11 @@ export const updateCategory = createAsyncThunk(
     async ({ categoryId, updatedCategory }, { rejectWithValue }) => {
         try {
             const response = await editarCategoria(categoryId, updatedCategory)
-            console.log(response.data)
+            // console.log(response.data)
             return response.data.categorias; // Devuelve el arreglo completo de categorías
         } catch (error) {
-            return rejectWithValue(error.response.data);
+            return rejectWithValue(error.message || 'Error desconocido');
+            // return rejectWithValue(error.response.data);
         }
     }
 );
@@ -123,7 +124,7 @@ const categoriesSlice = createSlice({
             })
             .addCase(updateCategory.rejected, (state, action) => {
                 state.status = 'failed';
-                state.error = action.error.message;
+                state.error = action.payload || 'Error al actualizar la categoría';
             })
             // ELIMINAR CATEGORIA
             .addCase(deleteCategory.pending, (state) => {
