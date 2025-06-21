@@ -37,7 +37,6 @@ export const addCategory = createAsyncThunk(
             const response = await agregarCategoria(newCategory);
             return response.data;
         } catch (error) {
-            console.error('Error adding category:', error);
             return rejectWithValue(error.message || 'Error desconocido');
         }
     }
