@@ -4,5 +4,9 @@ export const actionHelpers = {
   clickAddCategoryButton: () => {
     const button = screen.getByTestId('add-category-btn');
     fireEvent.click(button);
+  },
+   clickUpdateCategoryButton: () => {
+    const button = screen.getByTestId('update-category-btn');
+    fireEvent.click(button);
   }
 };

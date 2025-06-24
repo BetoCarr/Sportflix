@@ -12,6 +12,8 @@ import {
     mockAddCategory,
     setupSuccessfulAddCategoryMock,
     setupFailedAddCategoryMock,
+    mockUpdateCategory,
+    setupSuccessfulUpdateCategoryMock,
     clearAllMocks,
     resetAllMocks
 } from '../mocks/categoriesApiMocks';
@@ -19,11 +21,13 @@ import {
 import { assertionHelpers } from '../helpers/assertionHelpers';
 import { actionHelpers } from '../helpers/actionHelpers';
 import { createPreloadedCategoryState } from '../helpers/stateHelpers';
+// import { editarCategoria } from '../../../api/api';
 
 // Mock de las funciones de API
 jest.mock('../../../api/api', () => ({
     buscar: require('../mocks/categoriesApiMocks').mockBuscar,
-    agregarCategoria : require('../mocks/categoriesApiMocks').mockAddCategory
+    agregarCategoria : require('../mocks/categoriesApiMocks').mockAddCategory,
+    editarCategoria : require('../mocks/categoriesApiMocks').mockUpdateCategory
 }));
 
 describe("categories Integration Tests", () => {
@@ -95,6 +99,7 @@ describe("categories Integration Tests", () => {
             })
         );
     });
+    // TEST error addCategory
     test('should handle addCategory API error gracefully', async () => {
  
         const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic);
@@ -116,6 +121,30 @@ describe("categories Integration Tests", () => {
         expect(state.categories.status).toBe('failed');
         expect(state.categories.error).toBe('Error de red al agregar');
         expect(mockAddCategory).toHaveBeenCalledTimes(1);
+    });
+    // TEST EDITAR CATEGORIA
+    test('should update a category', async () => {
+        // Estado inicial pre-cargado con 3 categorías básicas
+        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)
+
+        // Configura el mock de la API para simular una actualización exitosa
+        setupSuccessfulUpdateCategoryMock()
+
+        // Renderiza el componente con el estado inicial y captura el store para inspección
+        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })
+
+        // Verifica que las categorías iniciales se hayan renderizado correctamente
+        await assertionHelpers.expectCategoriesToBeRendered(['Fut-bol', 'Frontenis', 'Longboarding'])
+
+        //  Dispara la acción para actualizar la categoría
+        actionHelpers.clickUpdateCategoryButton()
+
+        //  Espera a que la UI se actualice y verifique el nuevo nombre
+        await assertionHelpers.expectCategoriesToBeRendered(['Futbol Editado', 'Frontenis', 'Longboarding'])
+
+        // Verifica el estado del store (status y llamada al mock)
+        expect(store.getState().categories.status).toBe('succeeded');
+        expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
     });
 });
 

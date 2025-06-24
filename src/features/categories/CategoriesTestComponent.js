@@ -1,7 +1,7 @@
 // src/features/categories/__tests__/CategoriesTestComponent.jsx
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCategories, selectAllCategories, addCategory } from './categoriesSlice';
+import { fetchCategories, selectAllCategories, addCategory, updateCategory } from './categoriesSlice';
 import { mockCategoriesData } from './mocks/categoriesApiMocks';
 
 export default function CategoriesTestComponent() {
@@ -19,7 +19,15 @@ export default function CategoriesTestComponent() {
   const handleAddCategory = () => {
     dispatch(addCategory(mockCategoriesData.newCategory));
   };
+  const handleUpdateCategory = () => {
+    dispatch(updateCategory({
+      categoryId: 1,
+      updatedCategory: { nombre: 'Futbol Editado' }
+    }))
+  }
 
+
+  
   return (
     <div>
       <div data-testid="status">{status}</div>
@@ -35,6 +43,9 @@ export default function CategoriesTestComponent() {
       {/* 👉 Botón exclusivo para agregar categoria */}
       <button data-testid="add-category-btn" onClick={handleAddCategory}>
         Agregar categoría (test)
+      </button>
+      <button data-testid="update-category-btn" onClick={handleUpdateCategory}>
+        Actualizar categoría (test)
       </button>
     </div>
   );
