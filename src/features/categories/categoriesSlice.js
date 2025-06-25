@@ -69,7 +69,7 @@ export const deleteCategory = createAsyncThunk(
                 return rejectWithValue('Unexpected response status');
             }
         } catch (error) {
-            return rejectWithValue(error.message);
+            return rejectWithValue(error?.message || 'Error eliminando categoría');
         }
     }
 );
@@ -99,9 +99,7 @@ const categoriesSlice = createSlice({
             })
             .addCase(addCategory.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-        
                 const { categorias } = action.payload; // Extraer la lista actualizada de categorías
-        
                 if (categorias && Array.isArray(categorias)) {
                     // Reemplazar completamente el estado con las categorías actualizadas
                     categoriesAdapter.setAll(state, categorias);
