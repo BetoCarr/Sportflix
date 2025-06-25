@@ -61,7 +61,7 @@ describe("categories Integration Tests", () => {
 
         renderWithProviders(<CategoriesTestComponent />)   // Renderiza el componente con la configuración por defecto (sin estado precargado)
 
-        await assertionHelpers.expectErrorVisible()  // Espera a que aparezca el mensaje de error en pantalla
+        await assertionHelpers.expectErrorVisible('Error de red') // Espera a que el error se haga visible en el DOM
 
         expect(mockBuscar).toHaveBeenCalledTimes(1)  // Verifica que la función mock de fetch (mockBuscar) fue llamada exactamente una vez
     });
@@ -101,12 +101,11 @@ describe("categories Integration Tests", () => {
 
         setupFailedAddCategoryMock('Error de red al agregar')   // Configura el mock para simular un error al llamar a la API de agregar categoría
 
-
         const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })  // Renderiza el componente con el estado precargado
 
         actionHelpers.clickAddCategoryButton()  // Simula el click en el botón para agregar una categoría
 
-        await assertionHelpers.expectErrorVisible()   // Espera a que el error se haga visible en el DOM
+        await assertionHelpers.expectErrorVisible('Error de red al agregar') // Espera a que el error se haga visible en el DOM
 
         const state = store.getState()   // Obtiene el estado actual del store para hacer verificaciones
 
@@ -146,7 +145,7 @@ describe("categories Integration Tests", () => {
         
         actionHelpers.clickUpdateCategoryButton() // Simula el click en el botón de actualizar categoría
 
-        await assertionHelpers.expectErrorVisible() // Espera a que el mensaje de error sea visible
+        await assertionHelpers.expectErrorVisible('Error de red al editar') // Espera a que el mensaje de error sea visible
 
         const state = store.getState() // Verifica el estado final del store
 

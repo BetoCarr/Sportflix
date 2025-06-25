@@ -14,9 +14,15 @@ export const assertionHelpers = {
     expect(domHelpers.getLoadingMessage()).toBeInTheDocument();
   },
 
-  async expectErrorVisible() {
+  async expectErrorVisible(expectedMessage) {
     await waitFor(() => {
-        expect(domHelpers.getErrorMessage()).toBeInTheDocument();
+      const errorElement = domHelpers.getErrorMessage();
+      expect(errorElement).toBeInTheDocument();
+
+      // Validación adicional si se espera un mensaje específico
+      if (expectedMessage) {
+        expect(errorElement.textContent).toBe(expectedMessage);
+      }
     });
   }
 };
