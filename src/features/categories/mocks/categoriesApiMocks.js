@@ -57,11 +57,10 @@ export const setupSuccessfulUpdateCategoryMock = () => {
   });
 };
 
-export const setupFailedUpdateCategoryMock = (message = 'Fallo al actualizar') => {
-  mockUpdateCategory.mockRejectedValue({
-    response: { data: message }
-  });
+export const setupFailedUpdateCategoryMock = (errorMessage = 'Error de red al editar') => {
+  mockUpdateCategory.mockRejectedValue(new Error(errorMessage));
 };
+
 
 export const clearAllMocks = () => {
   mockBuscar.mockClear()

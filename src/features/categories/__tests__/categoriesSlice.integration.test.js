@@ -13,6 +13,7 @@ import {
     setupFailedAddCategoryMock,
     mockUpdateCategory,
     setupSuccessfulUpdateCategoryMock,
+    setupFailedUpdateCategoryMock,
     clearAllMocks,
     resetAllMocks
 } from '../mocks/categoriesApiMocks';
@@ -135,5 +136,27 @@ describe("categories Integration Tests", () => {
         expect(store.getState().categories.status).toBe('succeeded')    // Verifica el estado del store (status y llamada al mock)
         expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
     });
+    // TEST: debe manejar correctamente el error al intentar agregar una categoría
+    test('should handle updateCategory API error gracefully', async () => {
+        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)   // Estado inicial precargado con las categorías básicas
+
+        setupFailedUpdateCategoryMock('Error de red al editar') // Configura el mock para simular un fallo en la edición de la categoría
+
+        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })  // Renderiza el componente con el estado predefinido
+        
+        actionHelpers.clickUpdateCategoryButton() // Simula el click en el botón de actualizar categoría
+
+        await assertionHelpers.expectErrorVisible() // Espera a que el mensaje de error sea visible
+
+        const state = store.getState() // Verifica el estado final del store
+
+        expect(state.categories.entities[1].nombre).toBe('Fut-bol') // La categoría no debe haberse modificado
+
+        expect(state.categories.status).toBe('failed') // El estado del slice debe reflejar el error
+        expect(state.categories.error).toBe('Error de red al editar')
+
+        expect(mockUpdateCategory).toHaveBeenCalledTimes(1) // Verifica que el mock fue llamado una vez
+    });
+
 });
 
