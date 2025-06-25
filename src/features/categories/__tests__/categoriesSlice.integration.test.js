@@ -1,5 +1,4 @@
 import React from 'react'
-import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { renderWithProviders } from '../../../utils/testUtils'
 import CategoriesTestComponent from '../CategoriesTestComponent'
 
@@ -21,7 +20,6 @@ import {
 import { assertionHelpers } from '../helpers/assertionHelpers';
 import { actionHelpers } from '../helpers/actionHelpers';
 import { createPreloadedCategoryState } from '../helpers/stateHelpers';
-// import { editarCategoria } from '../../../api/api';
 
 // Mock de las funciones de API
 jest.mock('../../../api/api', () => ({
@@ -31,66 +29,62 @@ jest.mock('../../../api/api', () => ({
 }));
 
 describe("categories Integration Tests", () => {
-
-    beforeEach(() => {
-        // Limpiar todos los mocks antes de cada test
+    beforeEach(() => {    // Limpiar todos los mocks antes de cada test
         clearAllMocks()
         resetAllMocks()
     });
-    
+    // TEST: debe obtener correctamente las categorias
     test('should fetch and render categories', async () => {
-        setupSuccessfulFetchMock(mockCategoriesData.basic);
-        const { store } = renderWithProviders(<CategoriesTestComponent />);
+        setupSuccessfulFetchMock(mockCategoriesData.basic)  // Estado inicial pre-cargado con 3 categorías básicas
 
-        // Verifica estado de loading
-        assertionHelpers.expectLoadingVisible();
+        const { store } = renderWithProviders(<CategoriesTestComponent />); // Renderiza el componente con el estado inicial y captura el store para inspección
 
-        // Assert: categories render
-        await assertionHelpers.expectCategoriesToBeRendered([
+        assertionHelpers.expectLoadingVisible()    // Verifica estado de loading
+
+        await assertionHelpers.expectCategoriesToBeRendered([   // Assert: categories render
             'Fut-bol',
             'Frontenis',
             'Longboarding'
-        ]);
+        ])
 
-        // Verifica que la API se llamó correctamente
-        expect(mockBuscar).toHaveBeenCalledWith('/categorias');
-        expect(mockBuscar).toHaveBeenCalledTimes(1);
+        expect(mockBuscar).toHaveBeenCalledWith('/categorias') // Verifica que la API se llamó correctamente y una vez.
+        expect(mockBuscar).toHaveBeenCalledTimes(1) // Verifica el estado del store (status y llamada al mock)
     
-        const state = store.getState();
-        expect(state.categories.status).toBe('succeeded');
-        expect(state.categories.entities['1'].nombre).toBe('Fut-bol');
+        const state = store.getState() // Verifica el estado del store 
+        expect(state.categories.status).toBe('succeeded')
+        expect(state.categories.entities['1'].nombre).toBe('Fut-bol')
     })
+    // TEST: debe manejar correctamente el error al obtener categorías
     test('should handle API error gracefully', async () => {
-        setupFailedFetchMock('Error de red');
+        setupFailedFetchMock('Error de red') // Configura el mock de la API para simular un fallo al hacer fetch
 
-        renderWithProviders(<CategoriesTestComponent />);
+        renderWithProviders(<CategoriesTestComponent />)   // Renderiza el componente con la configuración por defecto (sin estado precargado)
 
-        await assertionHelpers.expectErrorVisible();
+        await assertionHelpers.expectErrorVisible()  // Espera a que aparezca el mensaje de error en pantalla
 
-        expect(mockBuscar).toHaveBeenCalledTimes(1);
+        expect(mockBuscar).toHaveBeenCalledTimes(1)  // Verifica que la función mock de fetch (mockBuscar) fue llamada exactamente una vez
     });
-
+    // TEST: debe agregar una nueva categoría exitosamente
     test('should add a new category', async () => {
  
-        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic);
+        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)  // 1️⃣ Crea un estado inicial precargado con las categorías básicas
 
-        // Configura el mock con el nuevo listado incluyendo la nueva categoría
-        setupSuccessfulAddCategoryMock();
+        setupSuccessfulAddCategoryMock() // Configura el mock con el nuevo listado incluyendo la nueva categoría
 
-        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState });
-        actionHelpers.clickAddCategoryButton()
+        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })  // Renderiza el componente con el estado precargado
 
-        // Assert: verifica que la nueva categoría aparece en el DOM
-        await assertionHelpers.expectCategoriesToBeRendered([
+        actionHelpers.clickAddCategoryButton()   // Dispara el evento que simula el click en el botón "Agregar categoría"
+
+        await assertionHelpers.expectCategoriesToBeRendered([   // 5️⃣ Verifica que todas las categorías (incluyendo la nueva) estén renderizadas en el DOM
             'Fut-bol',
             'Frontenis',
             'Longboarding',
-            'Natacion' // La nueva
-        ]);
-        // Verifica que la API fue llamada correctamente
-        expect(mockAddCategory).toHaveBeenCalledTimes(1);
-         // Verifica que el estado global del store fue actualizado correctamente
-        const state = store.getState();
+            'Natacion'
+        ])
+
+        expect(mockAddCategory).toHaveBeenCalledTimes(1)   // Asegura que la función mock de agregar categoría fue llamada una vez
+
+        const state = store.getState()   // Verifica que el estado global del store se actualizó con la nueva categoría
         expect(state.categories.entities['4']).toEqual(
             expect.objectContaining({
                 nombre: 'Natacion',
@@ -99,51 +93,46 @@ describe("categories Integration Tests", () => {
             })
         );
     });
-    // TEST error addCategory
+    // TEST: debe manejar correctamente el error al intentar agregar una categoría
     test('should handle addCategory API error gracefully', async () => {
  
-        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic);
-        // Configura el mock con el nuevo listado incluyendo la nueva categoría
-        setupFailedAddCategoryMock('Error de red al agregar');
+        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)   // Crea un estado inicial precargado con las categorías básicas
 
-        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState });
-        actionHelpers.clickAddCategoryButton();
+        setupFailedAddCategoryMock('Error de red al agregar')   // Configura el mock para simular un error al llamar a la API de agregar categoría
 
-        // Espera a que el estado se actualice y el error sea visible
-        await assertionHelpers.expectErrorVisible();
 
-        const state = store.getState();
+        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })  // Renderiza el componente con el estado precargado
 
-        // Verifica que no se agregó la nueva categoría
-        expect(state.categories.entities['4']).toBeUndefined();
+        actionHelpers.clickAddCategoryButton()  // Simula el click en el botón para agregar una categoría
 
-        // Verifica que el estado y error del slice fueron actualizados
-        expect(state.categories.status).toBe('failed');
-        expect(state.categories.error).toBe('Error de red al agregar');
-        expect(mockAddCategory).toHaveBeenCalledTimes(1);
+        await assertionHelpers.expectErrorVisible()   // Espera a que el error se haga visible en el DOM
+
+        const state = store.getState()   // Obtiene el estado actual del store para hacer verificaciones
+
+        expect(state.categories.entities['4']).toBeUndefined()   // Asegura que la nueva categoría *no* fue agregada al estado
+
+        expect(state.categories.status).toBe('failed')  // Verifica que el estado y el mensaje de error se hayan actualizado correctamente
+        expect(state.categories.error).toBe('Error de red al agregar')
+
+        expect(mockAddCategory).toHaveBeenCalledTimes(1);  // Asegura que el mock fue llamado una sola vez
+
     });
-    // TEST EDITAR CATEGORIA
+    // TEST: debe editar correctamente una categoria existente
     test('should update a category', async () => {
-        // Estado inicial pre-cargado con 3 categorías básicas
-        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)
 
-        // Configura el mock de la API para simular una actualización exitosa
-        setupSuccessfulUpdateCategoryMock()
+        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)   // Estado inicial pre-cargado con 3 categorías básicas
 
-        // Renderiza el componente con el estado inicial y captura el store para inspección
-        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })
+        setupSuccessfulUpdateCategoryMock() // Configura el mock de la API para simular una actualización exitosa
 
-        // Verifica que las categorías iniciales se hayan renderizado correctamente
-        await assertionHelpers.expectCategoriesToBeRendered(['Fut-bol', 'Frontenis', 'Longboarding'])
+        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })  // Renderiza el componente con el estado inicial y captura el store para inspección
 
-        //  Dispara la acción para actualizar la categoría
-        actionHelpers.clickUpdateCategoryButton()
+        await assertionHelpers.expectCategoriesToBeRendered(['Fut-bol', 'Frontenis', 'Longboarding']) // Verifica que las categorías iniciales se hayan renderizado correctamente
 
-        //  Espera a que la UI se actualice y verifique el nuevo nombre
-        await assertionHelpers.expectCategoriesToBeRendered(['Futbol Editado', 'Frontenis', 'Longboarding'])
+        actionHelpers.clickUpdateCategoryButton()   //  Dispara la acción para actualizar la categoría
 
-        // Verifica el estado del store (status y llamada al mock)
-        expect(store.getState().categories.status).toBe('succeeded');
+        await assertionHelpers.expectCategoriesToBeRendered(['Futbol Editado', 'Frontenis', 'Longboarding'])    //  Espera a que la UI se actualice y verifique el nuevo nombre
+
+        expect(store.getState().categories.status).toBe('succeeded')    // Verifica el estado del store (status y llamada al mock)
         expect(mockUpdateCategory).toHaveBeenCalledTimes(1);
     });
 });
