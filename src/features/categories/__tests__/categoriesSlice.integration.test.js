@@ -2,7 +2,8 @@ import React from 'react'
 import { waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../../utils/testUtils'
 import CategoriesTestComponent from '../CategoriesTestComponent'
-import { screen } from '@testing-library/react';
+import { screen } from '@testing-library/react'
+import { act } from 'react-dom/test-utils';
 
 // 👉 Importas el mock centralizado
 import { 
@@ -18,6 +19,7 @@ import {
     setupFailedUpdateCategoryMock,
     mockDeleteCategory,
     setupSuccessfulDeleteCategoryMock,
+    setupFailedDeleteCategoryMock,
     clearAllMocks,
     resetAllMocks
 } from '../mocks/categoriesApiMocks';
@@ -195,5 +197,33 @@ describe("categories Integration Tests", () => {
             mockCategoriesData.basic[1].id,
         ]));
     });
-});
+    // TEST: debe manejar correctamente el error al eliminar una categoría
+    test('should handle deleteCategory API error gracefully', async () => {
 
+        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)   // Estado inicial pre-cargado con 3 categorías básicas
+
+        setupFailedDeleteCategoryMock('Error de red al eliminar') // Simula fallo en el endpoint
+
+        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })  // Renderiza el componente con el estado inicial y captura el store para inspección
+
+        await assertionHelpers.expectCategoriesToBeRendered(['Fut-bol', 'Frontenis', 'Longboarding']) // Verifica que las categorías iniciales se hayan renderizado correctamente
+    
+        await act(async () => {
+            actionHelpers.clickDeleteCategoryButton() // Simula click
+        })
+        await waitFor(() => {   // Espera a que la categoría eliminada desaparezca del DOM y se dispare el thunk
+            expect(mockDeleteCategory).toHaveBeenCalledTimes(1);
+            expect(mockDeleteCategory).toHaveBeenCalledWith(mockCategoriesData.basic[2].id)
+
+            expect(screen.getByText('Fut-bol')).toBeInTheDocument();
+            expect(screen.getByText('Frontenis')).toBeInTheDocument();
+            expect(screen.queryByText('Longboarding')).toBeInTheDocument(); // ✅ confirmamos que fue eliminada
+        })
+         // Redux
+        const finalState = store.getState().categories;
+        expect(finalState.deleteStatus).toBe('failed'); // El status refleja el error
+        expect(finalState.error).toBe('Error de red al eliminar'); // Mensaje correcto
+        expect(finalState.ids).toContain(mockCategoriesData.basic[2].id); // La categoría aún está en el estado
+        expect(finalState.entities[mockCategoriesData.basic[2].id]).toBeDefined(); // Aún existe en entities
+    });
+});

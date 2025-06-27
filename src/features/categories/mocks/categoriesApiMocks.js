@@ -68,6 +68,10 @@ export const setupSuccessfulDeleteCategoryMock = () => {
     data: { message: 'Categoría eliminada correctamente.' }
   })
 };
+// Helper para simular un falloen  deleteCategory
+export const setupFailedDeleteCategoryMock = (errorMessage = 'Error al eliminar categoría') => {
+  mockDeleteCategory.mockRejectedValue({ message: errorMessage });
+}
 
 export const clearAllMocks = () => {
   mockBuscar.mockClear()
