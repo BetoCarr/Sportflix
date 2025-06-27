@@ -2,11 +2,20 @@ import { waitFor } from '@testing-library/react';
 import { domHelpers } from './domHelpers';
 
 export const assertionHelpers = {
+  // async expectCategoriesToBeRendered(names = []) {
+  //   await waitFor(() => {
+  //       names.forEach(name => {
+  //         expect(domHelpers.getCategoryByName(name)).toBeInTheDocument();
+  //       });
+  //   });
+  // },
+
   async expectCategoriesToBeRendered(names = []) {
     await waitFor(() => {
-        names.forEach(name => {
-          expect(domHelpers.getCategoryByName(name)).toBeInTheDocument();
-        });
+      for (const name of names) {
+        expect(domHelpers.getCategoryByName(name)).toBeInTheDocument();
+      }
+      return true; // <- Necesario para que waitFor sepa que no debe seguir esperando
     });
   },
 

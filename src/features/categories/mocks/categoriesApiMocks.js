@@ -3,6 +3,7 @@ import { jest } from '@jest/globals';
 export const mockBuscar = jest.fn();
 export const mockAddCategory = jest.fn();
 export const mockUpdateCategory = jest.fn();
+export const mockDeleteCategory = jest.fn();
 
 export const mockCategoriesData = {
   // Categorías básicas para testing
@@ -56,21 +57,29 @@ export const setupSuccessfulUpdateCategoryMock = () => {
     }
   });
 };
-
+// Helper para simular un fallo en updateCategory
 export const setupFailedUpdateCategoryMock = (errorMessage = 'Error de red al editar') => {
   mockUpdateCategory.mockRejectedValue(new Error(errorMessage));
 };
-
+// Helper para simular deleteCategory exitoso
+export const setupSuccessfulDeleteCategoryMock = () => {
+  mockDeleteCategory.mockResolvedValue({
+    status: 200,
+    data: { message: 'Categoría eliminada correctamente.' }
+  })
+};
 
 export const clearAllMocks = () => {
   mockBuscar.mockClear()
   mockAddCategory.mockClear()
   mockUpdateCategory.mockClear()
+  mockDeleteCategory.mockClear()
 };
 
 // Función para resetear todos los mocks (incluyendo implementaciones)
 export const resetAllMocks = () => {
   mockBuscar.mockReset()
-  mockAddCategory.mockClear()
-  mockUpdateCategory.mockClear();
+  mockAddCategory.mockReset()
+  mockUpdateCategory.mockReset()
+  mockDeleteCategory.mockReset()
 };

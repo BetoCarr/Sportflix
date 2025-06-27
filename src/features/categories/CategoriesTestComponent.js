@@ -1,7 +1,7 @@
 // src/features/categories/__tests__/CategoriesTestComponent.jsx
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCategories, selectAllCategories, addCategory, updateCategory } from './categoriesSlice';
+import { fetchCategories, selectAllCategories, addCategory, updateCategory, deleteCategory } from './categoriesSlice';
 import { mockCategoriesData } from './mocks/categoriesApiMocks';
 
 export default function CategoriesTestComponent() {
@@ -18,14 +18,16 @@ export default function CategoriesTestComponent() {
 
   const handleAddCategory = () => {
     dispatch(addCategory(mockCategoriesData.newCategory));
-  };
+  }
   const handleUpdateCategory = () => {
     dispatch(updateCategory({
       categoryId: 1,
       updatedCategory: { nombre: 'Futbol Editado' }
     }))
   }
-
+  const handleDeleteCategory = () => {
+    dispatch(deleteCategory(mockCategoriesData.basic[2].id))
+  }
 
   
   return (
@@ -46,6 +48,9 @@ export default function CategoriesTestComponent() {
       </button>
       <button data-testid="update-category-btn" onClick={handleUpdateCategory}>
         Actualizar categoría (test)
+      </button>
+      <button data-testid="delete-category-btn" onClick={handleDeleteCategory}>
+        Eliminar categoría (test)
       </button>
     </div>
   );

@@ -1,6 +1,8 @@
 import React from 'react'
+import { waitFor } from '@testing-library/react';
 import { renderWithProviders } from '../../../utils/testUtils'
 import CategoriesTestComponent from '../CategoriesTestComponent'
+import { screen } from '@testing-library/react';
 
 // 👉 Importas el mock centralizado
 import { 
@@ -14,6 +16,8 @@ import {
     mockUpdateCategory,
     setupSuccessfulUpdateCategoryMock,
     setupFailedUpdateCategoryMock,
+    mockDeleteCategory,
+    setupSuccessfulDeleteCategoryMock,
     clearAllMocks,
     resetAllMocks
 } from '../mocks/categoriesApiMocks';
@@ -26,7 +30,8 @@ import { createPreloadedCategoryState } from '../helpers/stateHelpers';
 jest.mock('../../../api/api', () => ({
     buscar: require('../mocks/categoriesApiMocks').mockBuscar,
     agregarCategoria : require('../mocks/categoriesApiMocks').mockAddCategory,
-    editarCategoria : require('../mocks/categoriesApiMocks').mockUpdateCategory
+    editarCategoria : require('../mocks/categoriesApiMocks').mockUpdateCategory,
+    eliminarCategoria : require('../mocks/categoriesApiMocks').mockDeleteCategory,
 }));
 
 describe("categories Integration Tests", () => {
@@ -67,7 +72,7 @@ describe("categories Integration Tests", () => {
     });
     // TEST: debe agregar una nueva categoría exitosamente
     test('should add a new category', async () => {
- 
+
         const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)  // 1️⃣ Crea un estado inicial precargado con las categorías básicas
 
         setupSuccessfulAddCategoryMock() // Configura el mock con el nuevo listado incluyendo la nueva categoría
@@ -76,7 +81,7 @@ describe("categories Integration Tests", () => {
 
         actionHelpers.clickAddCategoryButton()   // Dispara el evento que simula el click en el botón "Agregar categoría"
 
-        await assertionHelpers.expectCategoriesToBeRendered([   // 5️⃣ Verifica que todas las categorías (incluyendo la nueva) estén renderizadas en el DOM
+        await assertionHelpers.expectCategoriesToBeRendered([   // Verifica que todas las categorías (incluyendo la nueva) estén renderizadas en el DOM
             'Fut-bol',
             'Frontenis',
             'Longboarding',
@@ -96,7 +101,7 @@ describe("categories Integration Tests", () => {
     });
     // TEST: debe manejar correctamente el error al intentar agregar una categoría
     test('should handle addCategory API error gracefully', async () => {
- 
+
         const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)   // Crea un estado inicial precargado con las categorías básicas
 
         setupFailedAddCategoryMock('Error de red al agregar')   // Configura el mock para simular un error al llamar a la API de agregar categoría
@@ -156,6 +161,39 @@ describe("categories Integration Tests", () => {
 
         expect(mockUpdateCategory).toHaveBeenCalledTimes(1) // Verifica que el mock fue llamado una vez
     });
+    // TEST: debe eliminar correctamente una categoria 
+    test('should delete a category', async () => {
 
+        const preloadedState = createPreloadedCategoryState(mockCategoriesData.basic)   // Estado inicial pre-cargado con 3 categorías básicas
+
+        setupSuccessfulDeleteCategoryMock() // Configura el mock de la API para simular una eliminacion exitosa
+
+        const { store } = renderWithProviders(<CategoriesTestComponent />, { preloadedState })  // Renderiza el componente con el estado inicial y captura el store para inspección
+
+        await assertionHelpers.expectCategoriesToBeRendered(['Fut-bol', 'Frontenis', 'Longboarding']) // Verifica que las categorías iniciales se hayan renderizado correctamente
+    
+        actionHelpers.clickDeleteCategoryButton()   // Simula el click en el botón de eliminar categoría
+
+        await waitFor(() => {   // Espera a que la categoría eliminada desaparezca del DOM y se dispare el thunk
+            expect(mockDeleteCategory).toHaveBeenCalledTimes(1);
+            expect(mockDeleteCategory).toHaveBeenCalledWith(mockCategoriesData.basic[2].id);
+            expect(screen.queryByText('Longboarding')).not.toBeInTheDocument(); // ✅ confirmamos que fue eliminada
+        })
+
+        const finalState = store.getState().categories  // Obtiene el estado final del slice de categorías
+
+        expect(finalState.deleteStatus).toBe('succeeded')   // El estado de la operación de eliminación debe ser 'succeeded'
+
+        expect(finalState.ids).not.toContain(mockCategoriesData.basic[2].id)   // El ID de la categoría eliminada ya no debe estar presente
+        expect(finalState.entities[mockCategoriesData.basic[2].id]).toBeUndefined() // Su entidad debe haber sido removida
+        
+        expect(screen.getByText('Fut-bol')).toBeInTheDocument()   // Las demás categorías deben seguir presentes en el DOM
+        expect(screen.getByText('Frontenis')).toBeInTheDocument()
+
+        expect(finalState.ids).toEqual(expect.arrayContaining([ // Redux: Las categorías restantes deben seguir en el estado
+            mockCategoriesData.basic[0].id,
+            mockCategoriesData.basic[1].id,
+        ]));
+    });
 });
 
