@@ -52,7 +52,6 @@ export const updateCategory = createAsyncThunk(
             return response.data.categorias; // Devuelve el arreglo completo de categorías
         } catch (error) {
             return rejectWithValue(error.message || 'Error desconocido');
-            // return rejectWithValue(error.response.data);
         }
     }
 );
@@ -69,7 +68,7 @@ export const deleteCategory = createAsyncThunk(
                 return rejectWithValue('Unexpected response status');
             }
         } catch (error) {
-            return rejectWithValue(error?.message || 'Error eliminando categoría');
+            return rejectWithValue(error.message || 'Error eliminando categoría');
         }
     }
 );
@@ -129,13 +128,12 @@ const categoriesSlice = createSlice({
                 state.deleteStatus = 'loading';
             })
             .addCase(deleteCategory.fulfilled, (state, action) => {
-                // const { categoryId } = action.payload; // Desestructura el categoryId del payload
                 state.deleteStatus = 'succeeded';
                 categoriesAdapter.removeOne(state, action.payload);
             })
             .addCase(deleteCategory.rejected, (state, action) => {
                 state.deleteStatus = 'failed';
-                state.error = action.error.message;
+                state.error = action.payload || 'Error al eliminar la categoría';
             });
     },
 });
