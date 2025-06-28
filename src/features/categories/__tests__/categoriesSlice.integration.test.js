@@ -211,18 +211,20 @@ describe("categories Integration Tests", () => {
         await act(async () => {
             actionHelpers.clickDeleteCategoryButton() // Simula click
         })
-        await waitFor(() => {   // Espera a que la categoría eliminada desaparezca del DOM y se dispare el thunk
-            expect(mockDeleteCategory).toHaveBeenCalledTimes(1);
-            expect(mockDeleteCategory).toHaveBeenCalledWith(mockCategoriesData.basic[2].id)
+        await waitFor(() => {   // Espera a que se dispare el thunk y React procese actualizaciones
+            expect(mockDeleteCategory).toHaveBeenCalledTimes(1) // Verifica que la función mock haya sido llamada una vez
+            expect(mockDeleteCategory).toHaveBeenCalledWith(mockCategoriesData.basic[2].id) // Verifica que el thunk fue invocado con el ID correcto
 
-            expect(screen.getByText('Fut-bol')).toBeInTheDocument();
+            expect(screen.getByText('Fut-bol')).toBeInTheDocument();  // La categoría no debe haberse eliminado del DOM
             expect(screen.getByText('Frontenis')).toBeInTheDocument();
-            expect(screen.queryByText('Longboarding')).toBeInTheDocument(); // ✅ confirmamos que fue eliminada
+            expect(screen.queryByText('Longboarding')).toBeInTheDocument();
         })
-         // Redux
-        const finalState = store.getState().categories;
+
+        const finalState = store.getState().categories    // Obtiene el estado final del slice de categorías
+
         expect(finalState.deleteStatus).toBe('failed'); // El status refleja el error
         expect(finalState.error).toBe('Error de red al eliminar'); // Mensaje correcto
+        
         expect(finalState.ids).toContain(mockCategoriesData.basic[2].id); // La categoría aún está en el estado
         expect(finalState.entities[mockCategoriesData.basic[2].id]).toBeDefined(); // Aún existe en entities
     });
