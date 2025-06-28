@@ -18,3 +18,11 @@ test('should toggle like from true to false', () => {
 
     expect(newState.likes['1']).toBe(false) // Verificar: el like ahora debería ser false
 });
+// TEST: si el "like" no existe (es undefined), al alternarlo debería establecerse en true
+test('should toggle like from undefined to true', () => {
+    const initialState = getVideoStateWithLikes() // Preparar: estado inicial sin ningún like definido
+
+    const newState = reducer(initialState, toggleLike('999'))   // Actuar: se despacha la acción toggleLike sobre el video con ID '999'
+
+    expect(newState.likes['999']).toBe(true)    // Verificar: el like del video '999' debería ser true
+});
