@@ -14,3 +14,24 @@ export const getBaseVideoState = (overrides = {}) => ({
 // Estado con likes predefinidos
 export const getVideoStateWithLikes = (likes = {}) =>   getBaseVideoState({ likes });
 
+
+export const getVideoStateWithEntities = (videosArray = []) => {
+    const entities = {};
+    const ids = [];
+
+    videosArray.forEach(video => {
+        entities[video.id] = video;
+        ids.push(video.id);
+    });
+
+    return {
+        ids,
+        entities,
+        likes: Object.fromEntries(ids.map(id => [id, false])),
+        status: 'succeeded',
+        addVideoStatus: 'idle',
+        deleteVideoStatus: 'idle',
+        updateVideoStatus: 'idle',
+        error: null
+    };
+};
