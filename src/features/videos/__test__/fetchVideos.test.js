@@ -1,4 +1,5 @@
 import reducer from "../videosSlice";
+import { mockVideosData } from "../helpers/mockVideosData";
 import { getBaseVideoState } from "../helpers/stateHelpers";
 import { fetchVideos } from "../videosSlice";
 
@@ -17,14 +18,9 @@ test('should handle fetchVideos.pending and set status to loading', () => {
 test('should handle fetchVideos.fulfilled and populate videos and likes', () => {
     const initialState = getBaseVideoState()    //Estado inicial vacío
 
-    const mockPayload = [ // Simulamos una respuesta de la API con dos videos
-        { id: 1, title: 'Video 1', categoria_id: 101 },
-        { id: 2, title: 'Video 2', categoria_id: 102 }
-    ];
-
     const newState = reducer(initialState, { // Ejecucion de reducer con la acción fulfilled y el payload simulado
         type: fetchVideos.fulfilled.type,
-        payload: mockPayload
+        payload: mockVideosData.basic
     });
 
     expect(newState.status).toBe('succeeded')   // Estado actualizado
