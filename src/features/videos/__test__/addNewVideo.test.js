@@ -4,22 +4,22 @@ import { mockVideosData } from "../helpers/mockVideosData";
 
 // TEST: Cuando comienza la acción, el estado debe pasar a 'loading'
 test('should handle addNewVideo.pending and set addVideoStatus to loading', () => {
-    const initialState = getVideoStateWithEntities(mockVideosData.basic)
+    const initialState = getVideoStateWithEntities(mockVideosData.basic) // Preparar: Estado inicial con algunos videos ya cargados
     
-    const newState = reducer(initialState, {
+    const newState = reducer(initialState, {  // Actuar: se despacha manualmente la acción pending
         type: addNewVideo.pending.type,
     });
     
-    expect(newState.addVideoStatus).toBe('loading')
+    expect(newState.addVideoStatus).toBe('loading') // El estado debe reflejar loading
 });
 
 // TEST: Cuando se agrega un video correctamente
 test('should handle addNewVideo.fulfilled and add video and like', () => {
-    const initialState = getVideoStateWithEntities(mockVideosData.basic)
+    const initialState = getVideoStateWithEntities(mockVideosData.basic) // Preparar: Estado inicial con algunos videos ya cargados
 
     const newVideo = mockVideosData.newVideo // Asegúrate de que tenga un ID único (ej. 10)
 
-    const newState = reducer(initialState, {
+    const newState = reducer(initialState, { // Actuar: se despacha manualmente la acción fullfiled con el nuevo video
         type: addNewVideo.fulfilled.type,
         payload: newVideo
     })
@@ -35,16 +35,17 @@ test('should handle addNewVideo.fulfilled and add video and like', () => {
 
 });
 
-// // TEST: Cuando ocurre un error al agregar un video
-// test('should handle addNewVideo.rejected and set status to failed with error', () => {
-//     const initialState = getBaseVideoState();
-//     const error = 'Error de red';
+// TEST: Cuando ocurre un error al agregar un video
+test('should handle addNewVideo.rejected and set status to failed with error', () => {
+    const initialState = getVideoStateWithEntities(mockVideosData.basic) // Preparar: Estado inicial con algunos videos ya cargados
 
-//     const newState = reducer(initialState, {
-//         type: addNewVideo.rejected.type,
-//         payload: error
-//     });
+    const errorMessage = 'Error de red';    // Simulamos un mensaje de error que devuelve la API al fallar la petición
 
-//     expect(newState.addVideoStatus).toBe('failed');
-//     expect(newState.error).toBe(error);
-// });
+    const newState = reducer(initialState, {    // Actuar: se despacha manualmente la acción rejected con el mensaje de error
+        type: addNewVideo.rejected.type,
+        payload: errorMessage
+    })
+
+    expect(newState.addVideoStatus).toBe('failed')  // Verificar: El estado debe reflejar el fallo y contener el mensaje de error
+    expect(newState.error).toBe(errorMessage)
+});
