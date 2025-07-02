@@ -1,11 +1,34 @@
 export const mockVideosData = {
     basic: [
-        { id: 1, title: 'Video 1', categoria_id: 101 },
-        { id: 2, title: 'Video 2', categoria_id: 102 }
+        {
+            id: 1, 
+            title: 'Video 1', 
+            categoria_id: 101,
+            videoUrl:'https://www.youtube.com/watch?v=TloxdC0j_cg',
+            imageUrl:'images/futbol/tip-delanteros.png'
+        },
+        { 
+            id: 2,
+            title: 'Video 2', 
+            categoria_id: 102,
+            videoUrl:'https://www.youtube.com/watch?v=k4QMNkNV26A',
+            imageUrl:'images/futbol/no-perder-balon.png'
+        }
     ],
     newVideo: {
         id: 3,
         title: 'Nuevo Video',
-        categoria_id: 103
+        categoria_id: 103,
+        videoUrl:'https://www.youtube.com/watch?v=7ig8v7W4BVw',
+        imageUrl:'images/futbol/mejorar-regate.png'
+    }, 
+    updatedVideo: {
+        video: {
+            id: 1,
+            title: 'Titulo editado',
+            categoria_id: 101,
+            videoUrl:'https://www.youtube.com/watch?v=TloxdC0j_cg',
+            imageUrl:'images/futbol/tip-delanteros.png'
+        }
     }
 };
