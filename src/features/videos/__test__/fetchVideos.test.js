@@ -1,8 +1,8 @@
 import reducer from "../videosSlice";
 import { mockVideosData } from "../helpers/mockVideosData";
+import { expectErrorToBe, expectStatusToBe, expectLikesToBeFalse, expectVideoToMatch } from "../helpers/validationHelpers";
 import { getBaseVideoState } from "../helpers/stateHelpers";
 import { fetchVideos } from "../videosSlice";
-
 
 //  TEST: Verifica que el estado cambie a "loading" cuando se inicia la carga de videos
 test('should handle fetchVideos.pending and set status to loading', () => {
@@ -11,8 +11,7 @@ test('should handle fetchVideos.pending and set status to loading', () => {
     const newState = reducer(initialState, {     // Ejecutamos el reducer simulando que se disparó la acción fetchVideos.pending
         type: fetchVideos.pending.type
     });
-
-    expect(newState.status).toBe('loading')     // Verificamos que el estado esté en "loading"
+    expectStatusToBe(newState, 'status', 'loading');
 });
 // TEST: Verifica que el estado se actualice correctamente cuando la API responde exitosamente. Carga los videos y agrega sus respectivos "likes" en false
 test('should handle fetchVideos.fulfilled and populate videos and likes', () => {
@@ -23,11 +22,14 @@ test('should handle fetchVideos.fulfilled and populate videos and likes', () => 
         payload: mockVideosData.basic
     });
 
-    expect(newState.status).toBe('succeeded')   // Estado actualizado
+    expectStatusToBe(newState, 'status', 'succeeded') // Estado actualizado
+
     expect(Object.keys(newState.entities)).toHaveLength(2)  // Dos videos cargados
-    expect(newState.ids).toEqual([1, 2])    // IDs correctamente agregados
-    expect(newState.likes[1]).toBe(false)   // Like inicializado a false
-    expect(newState.likes[2]).toBe(false) // Like inicializado a false
+
+    expectVideoToMatch(newState.entities[1], mockVideosData.basic[0])   // Verifica que los datos del video con ID 1 coincidan exactamente con los datos simulados
+    expectVideoToMatch(newState.entities[2], mockVideosData.basic[1])   // Verifica que los datos del video con ID 2 coincidan exactamente con los datos simulados
+
+    expectLikesToBeFalse(newState.likes, [1, 2])    // Verifica que los "likes" para los videos 1 y 2 estén inicializados en false
 });
 // TEST: Verifica que el estado se marque como "failed" y que se guarde el error cuando la petición falla
 test('should handle fetchVideos.rejected and set error and failed status', () => {
@@ -40,6 +42,6 @@ test('should handle fetchVideos.rejected and set error and failed status', () =>
         payload: errorMessage
     });
 
-    expect(newState.status).toBe('failed')    // Verificamos que se haya guardado el error y el estado sea "failed"
-    expect(newState.error).toBe(errorMessage)
+    expectStatusToBe(newState, 'status', 'failed') // Estado actualizado
+    expectErrorToBe(newState, errorMessage)
 });
