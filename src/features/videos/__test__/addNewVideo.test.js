@@ -1,4 +1,5 @@
 import reducer, {addNewVideo} from "../videosSlice";
+import { expectErrorToBe, expectStatusToBe, expectLikesToBeFalse, expectVideoToMatch } from "../helpers/validationHelpers";
 import { getVideoStateWithEntities } from "../helpers/stateHelpers";
 import { mockVideosData } from "../helpers/mockVideosData";
 
@@ -9,8 +10,8 @@ test('should handle addNewVideo.pending and set addVideoStatus to loading', () =
     const newState = reducer(initialState, {  // Actuar: se despacha manualmente la acción pending
         type: addNewVideo.pending.type,
     });
-    
-    expect(newState.addVideoStatus).toBe('loading') // El estado debe reflejar loading
+
+    expectStatusToBe(newState, 'addVideoStatus', 'loading') // El estado debe reflejar loading
 });
 
 // TEST: Cuando se agrega un video correctamente
@@ -24,12 +25,11 @@ test('should handle addNewVideo.fulfilled and add video and like', () => {
         payload: newVideo
     })
 
-    expect(newState.addVideoStatus).toBe('succeeded')   // El estado debe reflejar éxito
+    expectStatusToBe(newState, 'addVideoStatus', 'succeeded') // El estado debe reflejar éxito
 
-    expect(newState.entities[newVideo.id]).toEqual(newVideo)    // El nuevo video debe agregarse correctamente al adaptador (entities + ids)
-    expect(newState.ids).toContain(newVideo.id)
+    expectVideoToMatch(newState.entities[newVideo.id], newVideo) // El nuevo video debe agregarse correctamente al adaptador (entities + ids)
 
-    expect(newState.likes[newVideo.id]).toBe(false)     // El like debe estar inicializado a false
+    expectLikesToBeFalse(newState.likes, [newVideo.id])    // El like debe estar inicializado a false
 
     expect(Object.keys(newState.entities)).toHaveLength(mockVideosData.basic.length + 1) // El resto del estado no debe haber sido alterado incorrectamente
 
@@ -45,7 +45,8 @@ test('should handle addNewVideo.rejected and set status to failed with error', (
         type: addNewVideo.rejected.type,
         payload: errorMessage
     })
+    
+    expectStatusToBe(newState, 'addVideoStatus', 'failed')  // Verificar: El estado debe reflejar el fallo y contener el mensaje de error
 
-    expect(newState.addVideoStatus).toBe('failed')  // Verificar: El estado debe reflejar el fallo y contener el mensaje de error
-    expect(newState.error).toBe(errorMessage)
+    expectErrorToBe(newState, errorMessage)
 });
