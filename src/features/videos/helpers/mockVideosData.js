@@ -27,8 +27,8 @@ export const mockVideosData = {
             id: 1,
             title: 'Titulo editado',
             categoria_id: 101,
-            videoUrl:'https://www.youtube.com/watch?v=TloxdC0j_cg',
-            imageUrl:'images/futbol/tip-delanteros.png'
+            videoUrl: 'https://www.youtube.com/watch?v=TloxdC0j_cg',
+            imageUrl: 'images/futbol/tip-delanteros.png'
         }
     }
 };
