@@ -1,3 +1,8 @@
+import { jest } from '@jest/globals';
+
+export const mockFetchVideos = jest.fn();
+
+
 export const mockVideosData = {
     basic: [
         {
@@ -31,4 +36,17 @@ export const mockVideosData = {
             imageUrl: 'images/futbol/tip-delanteros.png'
         }
     }
+};
+
+// Helpers
+export const setupSuccessfulFetchVideosMock = (data = mockVideosData.basic) => {
+    mockFetchVideos.mockResolvedValue({ data });
+};
+
+export const clearAllMocks = () => {
+    mockFetchVideos.mockClear();
+};
+
+export const resetAllMocks = () => {
+    mockFetchVideos.mockReset();
 };
