@@ -42,6 +42,15 @@ export const mockVideosData = {
 export const setupSuccessfulFetchVideosMock = (data = mockVideosData.basic) => {
     mockFetchVideos.mockResolvedValue({ data });
 };
+export const setupFailedFetchVideosMock = (errorMessage = 'Error al obtener videos') => {
+    mockFetchVideos.mockRejectedValue(new Error(errorMessage));
+};
+
+
+
+
+
+
 
 export const clearAllMocks = () => {
     mockFetchVideos.mockClear();

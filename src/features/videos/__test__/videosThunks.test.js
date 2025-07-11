@@ -4,6 +4,7 @@ import { setupStore } from '../../../store/store';
 import { 
     mockFetchVideos,
     setupSuccessfulFetchVideosMock, 
+    setupFailedFetchVideosMock,
     clearAllMocks,
     resetAllMocks
 } from '../mocks/mockVideosData';
@@ -29,5 +30,17 @@ describe('fetchVideos thunk', () => {
         expect(result.payload).toHaveLength(2)  // Verificar que el payload contenga exactamente 2 videos
         expect(state.ids).toEqual([1, 2])   // Verificar que los IDs fueron correctamente guardados en el estado
         expect(mockFetchVideos).toHaveBeenCalledTimes(1)    // Asegurar que el mock fue llamado exactamente una vez
+    });
+    test('dispatches rejected when API call fails', async () => {
+        setupFailedFetchVideosMock('Falla de red') // Simular que la API falla con un mensaje de error
+
+        const store = setupStore()  // Crear un store simulado
+        const result = await store.dispatch(fetchVideos())  // Disparar el thunk
+        const state = store.getState().videos;  // Obtener el estado actualizado del slice videos
+
+        expect(result.type).toBe('videos/fetchVideos/rejected') // Verificar que el thunk terminó con estado "rejected"
+        expect(result.payload).toBe('Falla de red') // Verificar que el mensaje de error se haya propagado correctamente
+        expect(state.ids).toEqual([])   // Verificar que el estado no haya cambiado (sin videos cargados)
+        expect(mockFetchVideos).toHaveBeenCalledTimes(1)    // Asegurar que el mock fue llamado
     });
 });
