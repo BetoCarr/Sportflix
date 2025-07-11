@@ -1,7 +1,7 @@
 import { jest } from '@jest/globals';
 
 export const mockFetchVideos = jest.fn();
-
+export const mockAddVideo = jest.fn();
 
 export const mockVideosData = {
     basic: [
@@ -44,6 +44,12 @@ export const setupSuccessfulFetchVideosMock = (data = mockVideosData.basic) => {
 };
 export const setupFailedFetchVideosMock = (errorMessage = 'Error al obtener videos') => {
     mockFetchVideos.mockRejectedValue(new Error(errorMessage));
+};
+
+export const setupSuccessfulAddVideoMock = () => {
+    mockAddVideo.mockResolvedValue({
+        data: { video: mockVideosData.newVideo }
+    });
 };
 
 
