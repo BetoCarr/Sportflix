@@ -1,5 +1,5 @@
 import reducer from "../videosSlice";
-import { mockVideosData } from "../helpers/mockVideosData";
+import { mockVideosData } from "../mocks/mockVideosData";
 import { expectErrorToBe, expectStatusToBe, expectLikesToBeFalse, expectVideoToMatch } from "../helpers/validationHelpers";
 import { getBaseVideoState } from "../helpers/stateHelpers";
 import { fetchVideos } from "../videosSlice";

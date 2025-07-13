@@ -1,5 +1,6 @@
 import { fetchVideos, addNewVideo } from '../videosSlice';
 import { setupStore } from '../../../store/store';
+import { getVideoStateWithEntities } from '../helpers/stateHelpers';
 
 import {
     mockVideosData,
@@ -52,7 +53,12 @@ describe('fetchVideos thunk', () => {
     test('dispatches fulfilled when addNewVideo succeeds', async () => {
         setupSuccessfulAddVideoMock()   // Simular una respuesta exitosa de la API para agregar un nuevo video
 
-        const store = setupStore()  // Crear un store simulado para testear el flujo completo del thunk
+        const preloadedState = {
+            videos: getVideoStateWithEntities(mockVideosData.basic) // Usar los mocks ya definidos como estado inicial
+        };
+
+        const store = setupStore(preloadedState)  // Crear un store simulado para testear el flujo completo del thunk
+
         const payload = {
             categoryId: mockVideosData.newVideo.categoria_id, // ID de categoría necesario para la API
             newVideo: mockVideosData.newVideo // Objeto con los datos del nuevo video
@@ -60,7 +66,7 @@ describe('fetchVideos thunk', () => {
 
         const result = await store.dispatch(addNewVideo(payload)) // Ejecuta el thunk con el payload simulado
         const state = store.getState().videos; // Obtiene el estado actualizado del slice "videos"
-
+        
         expect(result.type).toBe('videos/agregarNuevoVideo/fulfilled')    // Verifica que el thunk terminó exitosamente con el tipo correcto
         expect(result.payload).toEqual(mockVideosData.newVideo)    // Verifica que el payload devuelto por el thunk sea exactamente el nuevo video agregado
         expect(state.ids).toContain(mockVideosData.newVideo.id)    // Verifica que el nuevo ID del video esté presente en el estado (indicando que fue agregado al store)

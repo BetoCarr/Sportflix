@@ -1,7 +1,7 @@
 import reducer, {addNewVideo} from "../videosSlice";
 import { expectErrorToBe, expectStatusToBe, expectLikesToBeFalse, expectVideoToMatch } from "../helpers/validationHelpers";
 import { getVideoStateWithEntities } from "../helpers/stateHelpers";
-import { mockVideosData } from "../helpers/mockVideosData";
+import { mockVideosData } from "../mocks/mockVideosData";
 
 // TEST: Cuando comienza la acción, el estado debe pasar a 'loading'
 test('should handle addNewVideo.pending and set addVideoStatus to loading', () => {

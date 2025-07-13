@@ -52,10 +52,9 @@ export const setupSuccessfulAddVideoMock = () => {
     });
 };
 
-
-
-
-
+export const setupFailedAddVideoMock = (errorMessage = 'Error inesperado') => {
+    mockAddVideo.mockRejectedValue(new Error(errorMessage));
+};
 
 
 export const clearAllMocks = () => {
