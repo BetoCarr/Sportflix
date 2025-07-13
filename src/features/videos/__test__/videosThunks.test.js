@@ -9,6 +9,7 @@ import {
     setupFailedFetchVideosMock,
     mockAddVideo,
     setupSuccessfulAddVideoMock,
+    setupFailedAddVideoMock,
     clearAllMocks,
     resetAllMocks
 } from '../mocks/mockVideosData';
@@ -57,7 +58,7 @@ describe('fetchVideos thunk', () => {
             videos: getVideoStateWithEntities(mockVideosData.basic) // Usar los mocks ya definidos como estado inicial
         };
 
-        const store = setupStore(preloadedState)  // Crear un store simulado para testear el flujo completo del thunk
+        const store = setupStore(preloadedState)  // Crear un store simulado con videos precargados para testear el flujo completo del thunk
 
         const payload = {
             categoryId: mockVideosData.newVideo.categoria_id, // ID de categoría necesario para la API
@@ -73,4 +74,32 @@ describe('fetchVideos thunk', () => {
         expect(mockAddVideo).toHaveBeenCalledWith(payload.categoryId, payload.newVideo)    // Verifica que la función de la API fue llamada con los argumentos esperados
         expect(mockAddVideo).toHaveBeenCalledTimes(1)     // Verifica que la función de la API fue llamada exactamente una vez
     });
+    // TEST: debe manejar correctamente el error al agregar un video
+    test('dispatches rejected when addNewVideo fails', async () => {
+        setupFailedAddVideoMock('Error al agregar video'); // Simular error de la API
+
+        const preloadedState = {
+            videos: getVideoStateWithEntities(mockVideosData.basic) // Estado inicial con algunos videos
+        };
+
+        const store = setupStore(preloadedState)  // Crear un store simulado con videos precargados para testear el flujo completo del thunk
+
+        const payload = {
+            categoryId: mockVideosData.newVideo.categoria_id,   // ID de categoría necesario para la API
+            newVideo: mockVideosData.newVideo // Objeto con los datos del nuevo video
+        };
+
+        const result = await store.dispatch(addNewVideo(payload)); // Ejecuta el thunk con el payload simulado
+        const state = store.getState().videos; // Obtiene el estado actualizado del slice "videos"
+
+        // Aserciones
+        expect(result.type).toBe('videos/agregarNuevoVideo/rejected'); // Thunk termina como 'rejected'
+        expect(result.payload).toBe('Error al agregar video'); // El payload contiene el mensaje de error
+
+        expect(state.ids).toEqual([1, 2]); // No se agregó ningún nuevo video
+        expect(state.entities[3]).toBeUndefined(); // El ID del nuevo video no debe existir
+        expect(mockAddVideo).toHaveBeenCalledWith(payload.categoryId, payload.newVideo);
+        expect(mockAddVideo).toHaveBeenCalledTimes(1); // Verifica que la API fue llamada
+    });
+
 });
