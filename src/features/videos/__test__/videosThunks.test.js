@@ -1,6 +1,7 @@
 import { fetchVideos, addNewVideo } from '../videosSlice';
 import { setupStore } from '../../../store/store';
-import { getVideoStateWithEntities } from '../helpers/stateHelpers';
+import { createPreloadedStateVideos } from '../helpers/stateHelpers';
+import { buildThunkPayload } from '../helpers/thunkPayloadBuilder';
 
 import {
     mockVideosData,
@@ -54,16 +55,9 @@ describe('fetchVideos thunk', () => {
     test('dispatches fulfilled when addNewVideo succeeds', async () => {
         setupSuccessfulAddVideoMock()   // Simular una respuesta exitosa de la API para agregar un nuevo video
 
-        const preloadedState = {
-            videos: getVideoStateWithEntities(mockVideosData.basic) // Usar los mocks ya definidos como estado inicial
-        };
+        const store = createPreloadedStateVideos(mockVideosData.basic) // Crear un store simulado con videos precargados para testear el flujo completo del thunk
 
-        const store = setupStore(preloadedState)  // Crear un store simulado con videos precargados para testear el flujo completo del thunk
-
-        const payload = {
-            categoryId: mockVideosData.newVideo.categoria_id, // ID de categoría necesario para la API
-            newVideo: mockVideosData.newVideo // Objeto con los datos del nuevo video
-        }
+        const payload = buildThunkPayload('add');
 
         const result = await store.dispatch(addNewVideo(payload)) // Ejecuta el thunk con el payload simulado
         const state = store.getState().videos; // Obtiene el estado actualizado del slice "videos"
@@ -78,16 +72,9 @@ describe('fetchVideos thunk', () => {
     test('dispatches rejected when addNewVideo fails', async () => {
         setupFailedAddVideoMock('Error al agregar video'); // Simular error de la API
 
-        const preloadedState = {
-            videos: getVideoStateWithEntities(mockVideosData.basic) // Estado inicial con algunos videos
-        };
+        const store = createPreloadedStateVideos(mockVideosData.basic)  // Crear un store simulado con videos precargados para testear el flujo completo del thunk
 
-        const store = setupStore(preloadedState)  // Crear un store simulado con videos precargados para testear el flujo completo del thunk
-
-        const payload = {
-            categoryId: mockVideosData.newVideo.categoria_id,   // ID de categoría necesario para la API
-            newVideo: mockVideosData.newVideo // Objeto con los datos del nuevo video
-        };
+        const payload = buildThunkPayload('add');
 
         const result = await store.dispatch(addNewVideo(payload)); // Ejecuta el thunk con el payload simulado
         const state = store.getState().videos; // Obtiene el estado actualizado del slice "videos"
@@ -101,5 +88,4 @@ describe('fetchVideos thunk', () => {
         expect(mockAddVideo).toHaveBeenCalledWith(payload.categoryId, payload.newVideo);
         expect(mockAddVideo).toHaveBeenCalledTimes(1); // Verifica que la API fue llamada
     });
-
 });

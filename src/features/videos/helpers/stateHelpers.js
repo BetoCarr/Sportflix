@@ -1,3 +1,4 @@
+import { setupStore } from "../../../store/store";
 // Estado base de videos, imitando el shape de videosAdapter
 export const getBaseVideoState = (overrides = {}) => ({
     ids: [],
@@ -35,3 +36,9 @@ export const getVideoStateWithEntities = (videosArray = []) => {
         error: null
     };
 };
+
+export const createPreloadedStateVideos = (videosArray = []) =>
+    setupStore({
+        videos: getVideoStateWithEntities(videosArray),
+    });
+
