@@ -1,4 +1,4 @@
-import { fetchVideos, addNewVideo } from '../videosSlice';
+import { fetchVideos, addNewVideo, updateVideo } from '../videosSlice';
 import { setupStore } from '../../../store/store';
 import { createPreloadedStateVideos } from '../helpers/stateHelpers';
 import { buildThunkPayload } from '../helpers/thunkPayloadBuilder';
@@ -12,6 +12,8 @@ import {
     mockAddVideo,
     setupSuccessfulAddVideoMock,
     setupFailedAddVideoMock,
+    mockUpdateVideo,
+    setupSuccessfulUpdateVideoMock,
     clearAllMocks,
     resetAllMocks
 } from '../mocks/mockVideosData';
@@ -19,6 +21,7 @@ import {
 jest.mock('../../../api/api', () => ({ // Mock de las funciones de API
     obtnerVideos: require('../mocks/mockVideosData').mockFetchVideos,
     agregarNuevoVideo: require('../mocks/mockVideosData').mockAddVideo,
+    editarVideo: require('../mocks/mockVideosData').mockUpdateVideo,
 }));
 
 describe('fetchVideos thunk', () => {
@@ -96,6 +99,30 @@ describe('fetchVideos thunk', () => {
             expectedType: 'rejected',
             thunkName: 'agregarNuevoVideo',
             expectedError: 'Error al agregar video',
+        });
+    });
+     // TEST: debe editar correctamente un video existente
+    test('dispatches fulfilled when updateVideo succeeds', async () => {
+        setupSuccessfulUpdateVideoMock()   // Simular una respuesta exitosa de la API para agregar un nuevo video
+
+        const store = createPreloadedStateVideos(mockVideosData.basic) // Crear un store simulado con videos precargados para testear el flujo completo del thunk
+
+        const payload = buildThunkPayload('update');
+        // console.log(payload)
+
+        const result = await store.dispatch(updateVideo(payload)) // Ejecuta el thunk con el payload simulado
+        const state = store.getState().videos; // Obtiene el estado actualizado del slice "videos"
+        console.log(result)
+        assertThunkResult({
+            result,
+            state,
+            payload,
+            mockFn: mockUpdateVideo,
+            expectedType: 'fulfilled',
+            thunkName: 'editarVideo',
+            // expectedEntities: {
+            //     1: mockVideosData.updatedVideo.video
+            // }
         });
     });
 });

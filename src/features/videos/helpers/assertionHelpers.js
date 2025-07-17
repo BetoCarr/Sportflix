@@ -25,10 +25,10 @@ export const assertThunkResult = ({
                 expect(state.ids).toContain(payload.newVideo.id);
                 break;
 
-            // case 'editarVideo':
-            //     expect(result.payload).toEqual(payload.updatedVideoData);
-            //     expect(state.entities[payload.videoId]).toEqual(payload.updatedVideoData);
-            //     break;
+            case 'editarVideo':
+                expect(result.payload).toEqual(payload.updatedVideoData);
+                expect(state.entities[result.payload.video.id]).toEqual(payload.updatedVideoData.video);
+                break;
 
             // case 'eliminarVideo':
             //     expect(result.payload).toEqual({ videoId: removedId });

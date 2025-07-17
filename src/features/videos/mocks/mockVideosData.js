@@ -2,6 +2,7 @@ import { jest } from '@jest/globals';
 
 export const mockFetchVideos = jest.fn();
 export const mockAddVideo = jest.fn();
+export const mockUpdateVideo = jest.fn();
 
 export const mockVideosData = {
     basic: [
@@ -51,16 +52,24 @@ export const setupSuccessfulAddVideoMock = () => {
         data: { video: mockVideosData.newVideo }
     });
 };
-
 export const setupFailedAddVideoMock = (errorMessage = 'Error inesperado') => {
     mockAddVideo.mockRejectedValue(new Error(errorMessage));
 };
 
+export const setupSuccessfulUpdateVideoMock = () => {
+    mockUpdateVideo.mockResolvedValue({
+        data: mockVideosData.updatedVideo
+    });
+};
 
 export const clearAllMocks = () => {
-    mockFetchVideos.mockClear();
+    mockFetchVideos.mockClear()
+    mockAddVideo.mockClear()
+    mockUpdateVideo.mockClear()
 };
 
 export const resetAllMocks = () => {
-    mockFetchVideos.mockReset();
+    mockFetchVideos.mockReset()
+    mockAddVideo.mockReset()
+    mockUpdateVideo.mockReset()
 };
