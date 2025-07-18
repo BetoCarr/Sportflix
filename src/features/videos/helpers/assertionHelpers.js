@@ -10,6 +10,7 @@ export const assertThunkResult = ({
     expectedIds,
     removedId,
     customChecks,
+    previousState
 }) => {
     expect(result.type).toBe(`videos/${thunkName}/${expectedType}`);
 
@@ -53,9 +54,17 @@ export const assertThunkResult = ({
                 expect(state.ids).not.toContain(payload.newVideo.id);
                 break;
             
-            // case 'editarVideo':
-            //     // Opcional: verificar que los datos del video no hayan cambiado
-            //     break;
+            case 'editarVideo':
+                // Opcional: verificar que los datos del video no hayan cambiado
+                expect(state.updateVideoStatus).toBe('failed');
+                expect(state.error).toBe(expectedError);
+
+                if (previousState) {
+                    // Comparamos el estado del video antes y después
+                    expect(state.entities[payload.videoId])
+                        .toEqual(previousState.entities[payload.videoId]);
+                }
+                break;
 
             // case 'eliminarVideo':
             //     expect(state.ids).toContain(removedId);

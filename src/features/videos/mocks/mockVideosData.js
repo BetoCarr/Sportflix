@@ -4,6 +4,7 @@ export const mockFetchVideos = jest.fn();
 export const mockAddVideo = jest.fn();
 export const mockUpdateVideo = jest.fn();
 
+
 export const mockVideosData = {
     basic: [
         {
@@ -60,6 +61,10 @@ export const setupSuccessfulUpdateVideoMock = () => {
     mockUpdateVideo.mockResolvedValue({
         data: mockVideosData.updatedVideo
     });
+};
+
+export const setupFailedUpdateVideoMock = (errorMessage = 'Error inesperado') => {
+    mockUpdateVideo.mockRejectedValue(new Error(errorMessage));
 };
 
 export const clearAllMocks = () => {

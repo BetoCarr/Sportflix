@@ -1,9 +1,13 @@
+// Importaciones principales de thunks
 import { fetchVideos, addNewVideo, updateVideo } from '../videosSlice';
+
+// Funciones utilitarias para crear el store y estado inicial simulado
 import { setupStore } from '../../../store/store';
 import { createPreloadedStateVideos } from '../helpers/stateHelpers';
 import { buildThunkPayload } from '../helpers/thunkPayloadBuilder';
 import { assertThunkResult } from '../helpers/assertionHelpers';
 
+// Mock y helpers para simular respuestas de API (éxito y error)
 import {
     mockVideosData,
     mockFetchVideos,
@@ -14,16 +18,19 @@ import {
     setupFailedAddVideoMock,
     mockUpdateVideo,
     setupSuccessfulUpdateVideoMock,
+    setupFailedUpdateVideoMock,
     clearAllMocks,
     resetAllMocks
 } from '../mocks/mockVideosData';
 
+// Mock explícito de las funciones de API reales por sus contrapartes simuladas
 jest.mock('../../../api/api', () => ({ // Mock de las funciones de API
     obtnerVideos: require('../mocks/mockVideosData').mockFetchVideos,
     agregarNuevoVideo: require('../mocks/mockVideosData').mockAddVideo,
     editarVideo: require('../mocks/mockVideosData').mockUpdateVideo,
 }));
 
+// Tests para los thunks relacionados a videos
 describe('fetchVideos thunk', () => {
     beforeEach(() => {    // Limpiar todos los mocks antes de cada test
         clearAllMocks()
@@ -107,12 +114,11 @@ describe('fetchVideos thunk', () => {
 
         const store = createPreloadedStateVideos(mockVideosData.basic) // Crear un store simulado con videos precargados para testear el flujo completo del thunk
 
-        const payload = buildThunkPayload('update');
-        // console.log(payload)
+        const payload = buildThunkPayload('update')
 
         const result = await store.dispatch(updateVideo(payload)) // Ejecuta el thunk con el payload simulado
         const state = store.getState().videos; // Obtiene el estado actualizado del slice "videos"
-        console.log(result)
+        
         assertThunkResult({
             result,
             state,
@@ -120,9 +126,29 @@ describe('fetchVideos thunk', () => {
             mockFn: mockUpdateVideo,
             expectedType: 'fulfilled',
             thunkName: 'editarVideo',
-            // expectedEntities: {
-            //     1: mockVideosData.updatedVideo.video
-            // }
+        });
+    });
+    // TEST: debe manejar correctamente el error al editar un video existente
+    test('dispatches fulfilled when updateVideo succeeds', async () => {
+        setupFailedUpdateVideoMock()   // Simular una respuesta exitosa de la API para agregar un nuevo video
+
+        const store = createPreloadedStateVideos(mockVideosData.basic) // Crear un store simulado con videos precargados para testear el flujo completo del thunk
+        const previousState = store.getState().videos; // Guardar estado antes
+
+        const payload = buildThunkPayload('update');
+
+        const result = await store.dispatch(updateVideo(payload)) // Ejecuta el thunk con el payload simulado
+        const state = store.getState().videos; // Obtiene el estado actualizado del slice "videos"
+        
+        assertThunkResult({
+            result,
+            state,
+            previousState, // <= lo pasas aquí
+            payload,
+            mockFn: mockUpdateVideo,
+            expectedType: 'rejected',
+            expectedError: 'Error inesperado',
+            thunkName: 'editarVideo',
         });
     });
 });
