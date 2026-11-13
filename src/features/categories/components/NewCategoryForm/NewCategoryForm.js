@@ -84,7 +84,7 @@ function NewCategoryForm({ initialValuesForEdit, isEditing, categoryId }) {
                     //Validación del nombre de la categoria
                     if(!nombre) {
                         errors.nombre = 'El nombre de la categoria es requerido';
-                    } else if(!/^[a-zA-Z0-9À-ÿ\s\-]{3,50}$/.test(nombre)) {
+                    } else if(!/^[a-zA-Z0-9À-ÿ\s-]{3,50}$/.test(nombre)) {
                         errors.nombre = 'El nombre de la categoría solo puede incluir letras, números, espacios y guiones';
                     }
 

@@ -19,7 +19,7 @@ function NewVideoForm ({ initialValuesForEdit, isEditing, videoId, categoryId })
     const navigate = useNavigate();
 
     // Hooks del contexto de feedback para abrir y cerrar diálogos
-    const { openFeedback, closeFeedback } = useFeedback()
+    const { openFeedback } = useFeedback()
 
     // Obtiene información de la categoría seleccionada usando su ID
     const category = useSelector(state => selectCategoryById(state, categoryId))
@@ -55,13 +55,13 @@ function NewVideoForm ({ initialValuesForEdit, isEditing, videoId, categoryId })
                     // Validación del link del video
                     if (!videoUrl) {
                         errors.videoUrl = 'El link del video es requerido';
-                    } else if(!/^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(videoUrl)) {
+                    } else if(!/^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/.test(videoUrl)) {
                         errors.videoUrl = 'Por favor, ingresa un enlace de video válido. Asegúrate de que comience con http:// o https:// y que contenga solo letras, números, guiones, puntos y otros caracteres válidos.';
                     }
                     // Validación del link de la imagen
                     if (!imageUrl) {
                         errors.imageUrl = 'El link de la imagen requerido';
-                    } else if(!/^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?$/.test(imageUrl)) {
+                    } else if(!/^(https?:\/\/)?([\w-]+\.)+[\w-]+(\/[\w- ./?%&=]*)?$/.test(imageUrl)) {
                         errors.imageUrl = 'Por favor, ingresa un enlace de imagen válido. Asegúrate de que comience con http:// o https:// y que contenga solo letras, números, guiones, puntos y otros caracteres válidos.';
                     }
 
