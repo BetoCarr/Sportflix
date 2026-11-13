@@ -26,7 +26,7 @@ function Banner ({ categoryId, video}) {
                     {/* Contenedor para la imagen y el mensaje de error */}
                     <Box className='not-found-card'>
                         {/* Imagen de retroalimentación de error */}
-                        <img src={noVideoImage} className='no-video-img'/>
+                        <img src={noVideoImage} alt="No hay videos disponibles" className='no-video-img'/>
                         {/* Mensaje de error */}
                         <Typography variant='h4' color='text.primary'>
                             Datos del video incompletos
