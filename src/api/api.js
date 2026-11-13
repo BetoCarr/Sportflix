@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Configuración de la instancia de Axios para realizar peticiones a la API
 export const api = axios.create({
-    baseURL: "http://localhost:5000" // Establece la URL base de la API
+    baseURL: "http://localhost:5050" // Establece la URL base de la API
 })
 
 // Función para buscar datos en la API y actualizar el estado de un componente
