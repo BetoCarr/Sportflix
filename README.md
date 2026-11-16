@@ -1,70 +1,138 @@
-# Getting Started with Create React App
+# Sportflix
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplicación web para la gestión y organización de videos mediante categorías. Permite crear, consultar, editar y eliminar categorías y videos, utilizando una interfaz desarrollada con React y una API REST como fuente de datos.
 
-## Available Scripts
+## Características
 
-In the project directory, you can run:
+- **Gestión de categorías:** creación, consulta, edición y eliminación de categorías.
+- **Gestión de videos:** registro de videos asociados a categorías, edición de su información y eliminación.
+- **Navegación dinámica:** navegación entre las distintas vistas mediante rutas y parámetros de URL.
+- **Gestión de datos y estado:** uso de Redux Toolkit para centralizar los datos de categorías y videos, gestionar operaciones asíncronas y actualizar el estado de la aplicación tras las operaciones CRUD.
+- **Integración con API REST:** comunicación con el backend para consultar y persistir los datos.
+- **Interfaz de usuario:** componentes reutilizables, formularios y elementos visuales para organizar y presentar el contenido.
 
-### `npm start`
+## Capturas de pantalla
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Página principal de Sportflix
+<img src="docs/screenshots/home.png" alt="Página principal de Sportflix con categorías y videos" width="720" />
 
-### `npm test`
+### Formulario de categoría
+<img src="docs/screenshots/category-form.png" alt="Formulario de creación y edición de categorías en Sportflix" width="720" />
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Formulario de videos
+<img src="docs/screenshots/video-form.png" alt="Formulario de registro y edición de videos en Sportflix" width="720" />
 
-### `npm run build`
+## Tecnologías
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Frontend
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **React 18:** desarrollo de la interfaz mediante componentes.
+- **React Router DOM:** navegación y configuración de rutas.
+- **Redux Toolkit:** gestión del estado de la aplicación y coordinación de operaciones asíncronas.
+- **React Redux:** integración de Redux con los componentes de React.
+- **Reselect:** creación de selectores para obtener datos derivados del estado.
+- **Axios:** comunicación HTTP con el backend.
+- **Material UI:** componentes y herramientas para la interfaz.
+- **CSS y Styled Components:** estilos y presentación de los componentes.
+- **Create React App:** configuración del entorno de desarrollo y construcción de la aplicación.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Backend
 
-### `npm run eject`
+El frontend consume una API REST desarrollada independientemente con:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Python
+- Flask
+- MySQL
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+El backend se encuentra en un repositorio separado: [AluraFlix Backend](https://github.com/davecarrillo/aluraflix-backend).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## Organización del proyecto
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+El código fuente está organizado por funcionalidades y responsabilidades:
 
-## Learn More
+```text
+src/
+├── Components/       # Componentes reutilizables de interfaz
+├── api/              # Configuración y funciones de comunicación HTTP
+├── features/
+│   ├── categories/   # Estado y operaciones de categorías
+│   ├── videos/       # Estado y operaciones de videos
+│   └── feedbackdialog/
+│                     # Gestión de mensajes y diálogos de feedback
+├── pages/            # Vistas y configuración de rutas
+├── store/            # Configuración del store de Redux
+├── App.js
+└── index.js
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Esta organización permite localizar las distintas funcionalidades y mantener separadas las vistas, los componentes de interfaz, la comunicación con la API y la gestión del estado.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Requisitos
 
-### Code Splitting
+Para ejecutar el proyecto necesitas:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- Node.js y npm.
+- El backend de Sportflix en funcionamiento.
+- Una instancia de MySQL configurada para el backend.
 
-### Analyzing the Bundle Size
+## Instalación y ejecución
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### 1. Clonar el repositorio
 
-### Making a Progressive Web App
+```bash
+git clone https://github.com/BetoCarr/Sportflix.git
+cd Sportflix
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 2. Instalar dependencias
 
-### Advanced Configuration
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### 3. Configurar el backend
 
-### Deployment
+Clona y configura el [repositorio del backend](https://github.com/davecarrillo/aluraflix-backend), siguiendo sus instrucciones de instalación y configuración de la base de datos.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+El frontend está configurado para comunicarse con el backend en:
 
-### `npm run build` fails to minify
+```text
+http://localhost:5050
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Si utilizas otra dirección o puerto, actualiza la propiedad `baseURL` en `src/api/api.js`.
+
+### 4. Iniciar la aplicación
+
+```bash
+npm start
+```
+
+La aplicación estará disponible, por defecto, en:
+
+```text
+http://localhost:3000
+```
+
+## Scripts disponibles
+
+| Comando | Descripción |
+|---|---|
+| `npm start` | Inicia el servidor de desarrollo. |
+| `npm run build` | Genera la versión optimizada para producción. |
+| `npm test` | Ejecuta el entorno de pruebas de Create React App. |
+
+## Pruebas
+
+La rama principal (`main`) no incluye actualmente una suite de pruebas automatizadas.
+
+Existe una rama independiente (`test`) que conserva trabajo exploratorio relacionado con pruebas de componentes y lógica de estado. Durante ese proceso se identificaron dificultades de acoplamiento y aislamiento de responsabilidades, por lo que esos cambios no se integraron en la versión principal.
+
+La versión de `main` ha sido verificada mediante la ejecución de la aplicación y pruebas manuales de las operaciones principales, incluyendo la persistencia de los cambios al recargar la aplicación.
+
+## Estado del proyecto
+
+Sportflix integra una aplicación React con un backend independiente basado en Flask y MySQL.
+
+El proyecto reúne experiencia práctica en desarrollo de interfaces con componentes, formularios, enrutamiento, gestión de estado, operaciones asíncronas e integración con servicios REST.
